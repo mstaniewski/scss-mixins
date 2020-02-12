@@ -1,0 +1,95 @@
+@mixin fontSize($size) {
+  font-size: $size; //Fallback in px
+  font-size: rem($size);
+}
+
+@mixin font($family, $size, $weight: 400) {
+  @include fontSize($size);
+  font: {
+    weight: $weight;
+    family: $family;
+  }
+}
+
+@mixin _position($position, $args) {
+  @each $dir in top, left, bottom, right {
+    $i: index($args, $dir);
+
+    @if $i {
+      #{$dir}: nth($args, $i + 1);
+    }
+  }
+
+  position: $position;
+}
+
+@mixin absolute($args) {
+  @include _position(absolute, $args);
+}
+
+@mixin relative($args) {
+  @include _position(relative, $args);
+}
+
+@mixin fixed($args) {
+  @include _position(fixed, $args);
+}
+
+@mixin break-word {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@mixin sizing($args, $prefix: '') {
+  $width: if(length($args) == 2, nth($args, 1), $args);
+  $height: if(length($args) == 2, nth($args, 2), $args);
+
+  #{$prefix}width: $width;
+  #{$prefix}height: $height;
+}
+
+@mixin min-sizing($args) {
+  @include sizing($args, 'min-');
+}
+
+@mixin max-sizing($args) {
+  @include sizing($args, 'max-');
+}
+
+@mixin circle($args) {
+  @include sizing($args);
+
+  border-radius: 50%;
+}
+
+@mixin three-sided-border($style: '', $excluded: 'top') {
+  border: $style;
+  border-#{$excluded}: none;
+}
+
+@mixin flex-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-centered-y {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-centered-x {
+  display: flex;
+  justify-content: center;
+}
+
+@mixin rwd($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+      + "Available breakpoints are: #{map-keys($breakpoints)}.";
+  }
+}
